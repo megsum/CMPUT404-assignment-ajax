@@ -22,7 +22,7 @@
 
 
 import flask
-from flask import Flask, request
+from flask import Flask, request, redirect
 import json
 app = Flask(__name__)
 app.debug = True
@@ -73,28 +73,36 @@ def flask_post_json():
 
 @app.route("/")
 def hello():
+    # http://stackoverflow.com/questions/14343812/redirecting-to-url-in-flask
     '''Return something coherent here.. perhaps redirect to /static/index.html '''
-    return None
+    return redirect("/static/index.html")
 
 @app.route("/entity/<entity>", methods=['POST','PUT'])
 def update(entity):
+    # http://stackoverflow.com/questions/26536187/is-it-possible-to-dynamically-update-a-rendered-template-in-flask-server-side
     '''update the entities via this interface'''
-    return None
+    entity = flask.jsonify(entity)
+    for i in entity:
+        for j in i:
+            value = i[j]
+            key = j
+    myWorld.update(entity, key, value)
+    return entity
 
 @app.route("/world", methods=['POST','GET'])    
 def world():
     '''you should probably return the world here'''
-    return None
+    return  flask.jsonify(myWorld.world())
 
 @app.route("/entity/<entity>")    
 def get_entity(entity):
     '''This is the GET version of the entity interface, return a representation of the entity'''
-    return None
+    return flask.jsonify(entity)
 
 @app.route("/clear", methods=['POST','GET'])
 def clear():
     '''Clear the world out!'''
-    return None
+    return myWorld.clear()
 
 if __name__ == "__main__":
     app.run()
