@@ -81,12 +81,16 @@ def hello():
 def update(entity):
     # http://stackoverflow.com/questions/26536187/is-it-possible-to-dynamically-update-a-rendered-template-in-flask-server-side
     '''update the entities via this interface'''
-    entity = flask.jsonify(entity)
-    for i in entity:
-        for j in i:
-            value = i[j]
-            key = j
-    myWorld.update(entity, key, value)
+    #entity = flask.jsonify(entity)
+    entity = json.dumps(entity)
+    #return!! parse right! 
+    if len(entity) != 0:
+    
+        for i in entity:
+            for j in i:
+                value = 23
+                key = j
+                myWorld.update(entity, key, value)
     return entity
 
 @app.route("/world", methods=['POST','GET'])    
@@ -97,7 +101,7 @@ def world():
 @app.route("/entity/<entity>")    
 def get_entity(entity):
     '''This is the GET version of the entity interface, return a representation of the entity'''
-    return flask.jsonify(entity)
+    return flask.jsonify(myWorld.get(entity))
 
 @app.route("/clear", methods=['POST','GET'])
 def clear():
