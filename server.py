@@ -79,19 +79,15 @@ def hello():
 
 @app.route("/entity/<entity>", methods=['POST','PUT'])
 def update(entity):
-    # http://stackoverflow.com/questions/26536187/is-it-possible-to-dynamically-update-a-rendered-template-in-flask-server-side
     '''update the entities via this interface'''
-    #entity = flask.jsonify(entity)
-    entity = json.dumps(entity)
-    #return!! parse right! 
-    if len(entity) != 0:
-    
-        for i in entity:
-            for j in i:
-                value = 23
-                key = j
-                myWorld.update(entity, key, value)
-    return entity
+    # http://stackoverflow.com/questions/10434599/how-can-i-get-the-whole-request-post-body-in-python-with-flask
+    r = json.loads(request.data)
+    if len(r) > 0:
+        for k,v in r.items():
+            value = v
+            key = k
+            myWorld.update(entity, key, value)
+    return flask.jsonify(myWorld.get(entity))
 
 @app.route("/world", methods=['POST','GET'])    
 def world():
@@ -106,7 +102,8 @@ def get_entity(entity):
 @app.route("/clear", methods=['POST','GET'])
 def clear():
     '''Clear the world out!'''
-    return myWorld.clear()
+    myWorld.clear()
+    return flask.jsonify(myWorld.world())
 
 if __name__ == "__main__":
     app.run()
