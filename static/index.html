@@ -39,7 +39,11 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
             try {
                 if (xhr.status==200) {
                     //XXX: parse some JSON from the request!
+                    var text = xhr.responseText;
                     //XXX: Pass the data to the callback!
+                    if (callback) {
+			callback(text);
+		    }
                 }
             } 
             catch(e) {
@@ -48,7 +52,12 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
         }
     };
     //XXX: POST to a URL
+    xhr.open("POST",url);
     //XXX: set the mimetype and the accept headers!
+    xhr.overrideMimeType("application/json");
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.send( JSON.stringify ( objects ));
+    return xhr;
     // Remember to use application/json !
 }
 
@@ -136,9 +145,9 @@ function getPosition(e) {
 
 function addEntity(entity, data) {
     world[entity] = data;
-    drawNextFrame(); // (but should we?)
+    // drawNextFrame(); // (but should we?)
     //XXX: Send a XHTML Request that updates the entity you just  modified!
-
+    sendJSONXMLHTTPRequest("http://"+host+"/entity/"+entity, data , false);
 }
 
 var counter = 0;
@@ -262,7 +271,12 @@ mouse.mousedraggers.push(function(x,y,clicked,e) {
 
 function update() {
     //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
+
+    drawNextFrame(); // (but should we?)
     drawFrame();
+    sendJSONXMLHTTPRequest("http://" + host + "/world", "", function(text){
+	world = JSON.parse(text);
+    });
 }
 
 // 30 frames per second
