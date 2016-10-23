@@ -68,14 +68,23 @@ world = {};
 function drawCircle(context,entity) {
     with(context) {
         beginPath();              
-        lineWidth = 3;
+        lineWidth = .5;
         var x = entity["x"];
         var y = entity["y"];
         //moveTo(x,y);
         fillStyle = entity["colour"];
         strokeStyle = fillStyle;
-        arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
-        stroke();                                
+	moveTo(x,y);
+	lineTo(x+1000, y);  
+	moveTo(x,y);
+	lineTo(x, y+1000);
+	moveTo(x,y);
+	lineTo(x-1000, y);
+	moveTo(x,y);
+	lineTo(x, y-1000);
+        //arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
+        stroke();  
+        //fill();
     }
 }
 
@@ -256,15 +265,17 @@ mouse = (function() {
 // Add the application specific mouse listeners!
 //XXX: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'#FFD700'});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'#87CEFA'});
 });
 
+//http://stackoverflow.com/questions/5092808/how-do-i-randomly-generate-html-hex-color-codes-using-javascript
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green',
+    var c = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
+    addEntityWithoutName({'x':x,'y':y,'colour':c,
                           'radius':10});
 });
 
@@ -272,10 +283,12 @@ mouse.mousedraggers.push(function(x,y,clicked,e) {
 function update() {
     //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
 
-    drawNextFrame(); // (but should we?)
-    drawFrame();
+    //drawNextFrame(); // (but should we?)
+    //drawFrame();
     sendJSONXMLHTTPRequest("http://" + host + "/world", "", function(text){
 	world = JSON.parse(text);
+	drawNextFrame(); // (but should we?)
+	drawFrame();
     });
 }
 
